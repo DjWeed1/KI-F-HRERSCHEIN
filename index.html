@@ -1,7 +1,386 @@
 <!DOCTYPE html>
 <html lang="de">
-<head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>KI-Führerschein Prüfungssimulation</title> <style> body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; line-height: 1.6; background-color: #f4f4f4; } .quiz-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); } h1 { text-align: center; color: #333; } .question { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 15px; } .options { list-style: none; padding: 0; } .options li { margin-bottom: 10px; } #timer { font-size: 24px; font-weight: bold; position: fixed; top: 10px; right: 20px; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.1); } #submit-btn { display: block; width: 100%; padding: 15px; background-color: #28a745; color: #fff; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; } #result { margin-top: 20px; font-size: 18px; font-weight: bold; text-align: center; } </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Führerschein Prüfungssimulation</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; line-height: 1.6; background-color: #f4f4f4; }
+        .quiz-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; }
+        h1 { text-align: center; color: #333; }
+        .question { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 15px; }
+        .options { list-style: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        #timer { font-size: 24px; font-weight: bold; position: fixed; top: 10px; right: 20px; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.1); z-index: 1000; }
+        .btn { display: block; width: 100%; padding: 15px; background-color: #28a745; color: #fff; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; text-align: center; margin-top: 20px; }
+        .btn:hover { background-color: #218838; }
+        #start-screen { text-align: center; padding: 40px 20px; }
+        #quiz-content { display: none; }
+        #result { margin-top: 20px; font-size: 18px; font-weight: bold; text-align: center; }
+    </style>
 </head>
-<body> <div id="timer">20:00</div> <div class="quiz-container"> <h1>KI-Führerschein Prüfungssimulation</h1> <form id="quiz-form"> <!-- Frage 1 --> <div class="question"> <p>1. Was sind Kernmerkmale von Generativer KI? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q1" value="A"> A) Sie kann neue Inhalte wie Texte, Bilder oder Code erstellen.</li> <li><input type="checkbox" name="q1" value="B"> B) Sie basiert oft auf Large Language Models (LLMs).</li> <li><input type="checkbox" name="q1" value="C"> C) Sie versteht die Welt wie ein Mensch mit Bewusstsein.</li> <li><input type="checkbox" name="q1" value="D"> D) Sie sagt Ergebnisse basierend auf Wahrscheinlichkeiten voraus.</li> </ul> </div> <!-- Frage 2 --> <div class="question"> <p>2. Welche Risiken entstehen durch die Nutzung von KI im Unternehmen? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q2" value="A"> A) Datenschutzverletzungen bei Eingabe sensibler Daten.</li> <li><input type="checkbox" name="q2" value="B"> B) Verbreitung von faktisch falschen Informationen (Halluzinationen).</li> <li><input type="checkbox" name="q2" value="C"> C) Die KI übernimmt automatisch die Geschäftsführung.</li> <li><input type="checkbox" name="q2" value="D"> D) Urheberrechtsprobleme bei generierten Inhalten.</li> </ul> </div> <!-- Frage 3 --> <div class="question"> <p>3. Was regelt der EU AI Act? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q3" value="A"> A) Er verbietet KI-Systeme mit unannehmbarem Risiko (z.B. Social Scoring).</li> <li><input type="checkbox" name="q3" value="B"> B) Er legt Transparenzpflichten für Deepfakes fest.</li> <li><input type="checkbox" name="q3" value="C"> C) Er regelt die Preise für ChatGPT-Abonnements.</li> <li><input type="checkbox" name="q3" value="D"> D) Er definiert Anforderungen an Hochrisiko-KI-Systeme.</li> </ul> </div> <!-- Frage 4 --> <div class="question"> <p>4. Welche Prompting-Techniken verbessern die Ergebnisse? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q4" value="A"> A) Zuweisung einer Rolle (Persona) an die KI.</li> <li><input type="checkbox" name="q4" value="B"> B) Bereitstellung von Beispielen (Few-Shot Prompting).</li> <li><input type="checkbox" name="q4" value="C"> C) Verwendung von möglichst kurzen Prompts (nur 1 Wort).</li> <li><input type="checkbox" name="q4" value="D"> D) Schritt-für-Schritt-Anweisungen (Chain-of-Thought).</li> </ul> </div> <!-- Frage 5 --> <div class="question"> <p>5. Was ist Bias in KI-Modellen? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q5" value="A"> A) Eine Voreingenommenheit oder Diskriminierung in den Daten.</li> <li><input type="checkbox" name="q5" value="B"> B) Ein technischer Defekt an der Hardware.</li> <li><input type="checkbox" name="q5" value="C"> C) Die Spiegelung gesellschaftlicher Vorurteile durch die Trainingsdaten.</li> <li><input type="checkbox" name="q5" value="D"> D) Die Einstellung der KI, keine politischen Fragen zu beantworten.</li> </ul> </div> <!-- Frage 6 --> <div class="question"> <p>6. Was ist ein "Token" im Kontext von LLMs? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q6" value="A"> A) Eine Kryptowährung.</li> <li><input type="checkbox" name="q6" value="B"> B) Die Einheit, in der Text verarbeitet wird (Wörter oder Wortteile).</li> <li><input type="checkbox" name="q6" value="C"> C) Ein Sicherheitsschlüssel für die API.</li> <li><input type="checkbox" name="q6" value="D"> D) Die Basis für die Kostenabrechnung vieler KI-Dienste.</li> </ul> </div> <!-- Frage 7 --> <div class="question"> <p>7. Welche KI-Systeme stuft der EU AI Act als "Hochrisiko" ein? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q7" value="A"> A) KI in kritischer Infrastruktur (z.B. Stromnetz).</li> <li><input type="checkbox" name="q7" value="B"> B) KI zur biometrischen Identifizierung (Gesichtserkennung).</li> <li><input type="checkbox" name="q7" value="C"> C) KI in Videospielen.</li> <li><input type="checkbox" name="q7" value="D"> D) KI im Personalwesen (Bewerberauswahl).</li> </ul> </div> <!-- Frage 8 --> <div class="question"> <p>8. Was bedeutet "Halluzination" bei einem Chatbot? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q8" value="A"> A) Die KI erfindet Fakten.</li> <li><input type="checkbox" name="q8" value="B"> B) Die KI antwortet sehr überzeugend, aber falsch.</li> <li><input type="checkbox" name="q8" value="C"> C) Die KI zeigt Bilder von Drogen.</li> <li><input type="checkbox" name="q8" value="D"> D) Die KI erkennt, dass sie eine Maschine ist.</li> </ul> </div> <!-- Frage 9 --> <div class="question"> <p>9. Was ist der Unterschied zwischen Supervised und Unsupervised Learning? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q9" value="A"> A) Supervised Learning nutzt gelabelte Daten (Daten mit der richtigen Antwort).</li> <li><input type="checkbox" name="q9" value="B"> B) Unsupervised Learning sucht selbstständig nach Mustern in Daten.</li> <li><input type="checkbox" name="q9" value="C"> C) Es gibt keinen Unterschied.</li> <li><input type="checkbox" name="q9" value="D"> D) Supervised Learning findet ohne Internet statt.</li> </ul> </div> <!-- Frage 10 --> <div class="question"> <p>10. Was ist Deep Learning? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q10" value="A"> A) Ein Teilbereich des Maschinellen Lernens.</li> <li><input type="checkbox" name="q10" value="B"> B) Die Nutzung von künstlichen neuronalen Netzen mit vielen Schichten.</li> <li><input type="checkbox" name="q10" value="C"> C) Das Auswendiglernen von Datenbanken.</li> <li><input type="checkbox" name="q10" value="D"> D) Die Grundlage für moderne Sprachmodelle wie GPT.</li> </ul> </div> <!-- Frage 11 --> <div class="question"> <p>11. Welche Daten sind besonders kritisch bei der Eingabe in öffentliche KIs? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q11" value="A"> A) Personenbezogene Daten (Namen, Gesundheitsdaten).</li> <li><input type="checkbox" name="q11" value="B"> B) Geschäftsgeheimnisse (Quellcode, Strategien).</li> <li><input type="checkbox" name="q11" value="C"> C) Öffentlich zugängliche Wetterdaten.</li> <li><input type="checkbox" name="q11" value="D"> D) Passwörter.</li> </ul> </div> <!-- Frage 12 --> <div class="question"> <p>12. Was ist ein "System Prompt"? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q12" value="A"> A) Eine Fehlermeldung.</li> <li><input type="checkbox" name="q12" value="B"> B) Eine Anweisung, die das Verhalten der KI festlegt (Rolle, Stil).</li> <li><input type="checkbox" name="q12" value="C"> C) Der erste Prompt des Nutzers in einer Sitzung.</li> <li><input type="checkbox" name="q12" value="D"> D) Ein technischer Befehl zum Neustart.</li> </ul> </div> <!-- Frage 13 --> <div class="question"> <p>13. Was besagt das Urheberrecht in der EU meist für KI-generierte Werke ohne menschlichen Einfluss? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q13" value="A"> A) Sie sind voll urheberrechtlich geschützt.</li> <li><input type="checkbox" name="q13" value="B"> B) Sie genießen meist keinen urheberrechtlichen Schutz.</li> <li><input type="checkbox" name="q13" value="C"> C) Der Urheber ist die KI-Firma.</li> <li><input type="checkbox" name="q13" value="D"> D) Nur der Mensch, der die "geistige Schöpfung" erbracht hat, ist Urheber.</li> </ul> </div> <!-- Frage 14 --> <div class="question"> <p>14. Was ist "Few-Shot Prompting"? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q14" value="A"> A) Der KI Beispiele für die gewünschte Antwort geben.</li> <li><input type="checkbox" name="q14" value="B"> B) Die KI darf nur wenige Wörter schreiben.</li> <li><input type="checkbox" name="q14" value="C"> C) Eine Technik zur Reduktion von Halluzinationen.</li> <li><input type="checkbox" name="q14" value="D"> D) Das Gegenteil von Zero-Shot Prompting.</li> </ul> </div> <!-- Frage 15 --> <div class="question"> <p>15. Was ist der "AI Act" der EU? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q15" value="A"> A) Ein Gesetz zur Förderung von KI-Startups.</li> <li><input type="checkbox" name="q15" value="B"> B) Die weltweit erste umfassende KI-Verordnung.</li> <li><input type="checkbox" name="q15" value="C"> C) Ein technischer Standard für Hardware.</li> <li><input type="checkbox" name="q15" value="D"> D) Ein Regelwerk zum Schutz von Grundrechten.</li> </ul> </div> <!-- Frage 16 --> <div class="question"> <p>16. Welche Vorteile bietet der Einsatz von KI im Kundenservice? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q16" value="A"> A) 24/7 Verfügbarkeit.</li> <li><input type="checkbox" name="q16" value="B"> B) Sofortige Beantwortung von Standardanfragen.</li> <li><input type="checkbox" name="q16" value="C"> C) Die KI ersetzt menschliche Empathie perfekt.</li> <li><input type="checkbox" name="q16" value="D"> D) Kosteneffizienz.</li> </ul> </div> <!-- Frage 17 --> <div class="question"> <p>17. Was ist "Reinforcement Learning from Human Feedback" (RLHF)? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q17" value="A"> A) Eine Trainingsmethode für KI.</li> <li><input type="checkbox" name="q17" value="B"> B) Menschen bewerten KI-Antworten, um das Modell zu verbessern.</li> <li><input type="checkbox" name="q17" value="C"> C) Die KI lernt, menschliche Emotionen zu ignorieren.</li> <li><input type="checkbox" name="q17" value="D"> D) Ein Verfahren zur Fehlerkorrektur.</li> </ul> </div> <!-- Frage 18 --> <div class="question"> <p>18. Was ist "Chain-of-Thought" Prompting? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q18" value="A"> A) Die KI wird aufgefordert, "Schritt für Schritt" zu denken.</li> <li><input type="checkbox" name="q18" value="B"> B) Hilfreich bei komplexen logischen Aufgaben oder Mathe.</li> <li><input type="checkbox" name="q18" value="C"> C) Eine Methode zum Bilder generieren.</li> <li><input type="checkbox" name="q18" value="D"> D) Dient der Verbesserung der logischen Schlussfolgerung.</li> </ul> </div> <!-- Frage 19 --> <div class="question"> <p>19. Was sind verbotene KI-Praktiken nach dem EU AI Act? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q19" value="A"> A) Social Scoring durch Behörden.</li> <li><input type="checkbox" name="q19" value="B"> B) KI zur Manipulation von Verhalten (Subliminale Techniken).</li> <li><input type="checkbox" name="q19" value="C"> C) Gesichtserkennung zur Verbrechensbekämpfung (mit Ausnahmen).</li> <li><input type="checkbox" name="q19" value="D"> D) KI-Spielzeug mit Sprachausgabe.</li> </ul> </div> <!-- Frage 20 --> <div class="question"> <p>20. Was ist ein Large Language Model (LLM)? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q20" value="A"> A) Ein Modell, das auf riesigen Textmengen trainiert wurde.</li> <li><input type="checkbox" name="q20" value="B"> B) Ein System zur Vorhersage des nächsten Wortes.</li> <li><input type="checkbox" name="q20" value="C"> C) Eine Datenbank für Übersetzungen.</li> <li><input type="checkbox" name="q20" value="D"> D) Ein Modell, das nur Fakten speichert.</li> </ul> </div> <!-- Frage 21 --> <div class="question"> <p>21. Wie kann man Bias in KI-Systemen reduzieren? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q21" value="A"> A) Durch diverse und repräsentative Trainingsdaten.</li> <li><input type="checkbox" name="q21" value="B"> B) Durch regelmäßige Audits und Tests auf Diskriminierung.</li> <li><input type="checkbox" name="q21" value="C"> C) Indem man die KI keine Entscheidungen treffen lässt.</li> <li><input type="checkbox" name="q21" value="D"> D) Durch menschliche Aufsicht (Human-in-the-loop).</li> </ul> </div> <!-- Frage 22 --> <div class="question"> <p>22. Was ist der Parameter "Temperatur" bei LLMs? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q22" value="A"> A) Er steuert die Kreativität der Antwort.</li> <li><input type="checkbox" name="q22" value="B"> B) Hohe Temperatur führt zu zufälligeren, kreativeren Antworten.</li> <li><input type="checkbox" name="q22" value="C"> C) Niedrige Temperatur macht die KI fokussierter und deterministischer.</li> <li><input type="checkbox" name="q22" value="D"> D) Er misst die Serverlast.</li> </ul> </div> <!-- Frage 23 --> <div class="question"> <p>23. Was sind Transparenzpflichten für Anbieter von KI-Systemen? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q23" value="A"> A) Kennzeichnung von KI-generierten Inhalten (Deepfakes).</li> <li><input type="checkbox" name="q23" value="B"> B) Offenlegung des kompletten Quellcodes für jeden Nutzer.</li> <li><input type="checkbox" name="q23" value="C"> C) Information, dass man mit einer KI interagiert.</li> <li><input type="checkbox" name="q23" value="D"> D) Erstellung einer detaillierten technischen Dokumentation.</li> </ul> </div> <!-- Frage 24 --> <div class="question"> <p>24. Was ist "Zero-Shot Prompting"? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q24" value="A"> A) Der KI eine Aufgabe ohne Beispiele geben.</li> <li><input type="checkbox" name="q24" value="B"> B) Die KI antwortet sofort ohne zu zögern.</li> <li><input type="checkbox" name="q24" value="C"> C) Die Standardnutzungsweise von ChatGPT.</li> <li><input type="checkbox" name="q24" value="D"> D) Eine Technik für Fortgeschrittene.</li> </ul> </div> <!-- Frage 25 --> <div class="question"> <p>25. Wer ist laut AI Act für die Einhaltung der Regeln bei einem KI-System verantwortlich? (Mehrere Antworten möglich)</p> <ul class="options"> <li><input type="checkbox" name="q25" value="A"> A) Der Anbieter (Provider), der die KI entwickelt.</li> <li><input type="checkbox" name="q25" value="B"> B) Der Händler oder Importeur.</li> <li><input type="checkbox" name="q25" value="C"> C) Der Endnutzer (in bestimmten Fällen).</li> <li><input type="checkbox" name="q25" value="D"> D) Niemand, KI ist rechtsfrei.</li> </ul> </div> <button type="button" id="submit-btn" onclick="submitQuiz()">Test jetzt auswerten</button> </form> <div id="result"></div> </div> <script> // Hier sind die richtigen Antworten hinterlegt (für die Auswertung) const correctAnswers = { q1: ["A", "B", "D"], q2: ["A", "B", "D"], q3: ["A", "B", "D"], q4: ["A", "B", "D"], q5: ["A", "C"], q6: ["B", "D"], q7: ["A", "B", "D"], q8: ["A", "B"], q9: ["A", "B"], q10: ["A", "B", "D"], q11: ["A", "B", "D"], q12: ["B"], q13: ["B", "D"], q14: ["A", "D"], q15: ["B", "D"], q16: ["A", "B", "D"], q17: ["A", "B", "D"], q18: ["A", "B", "D"], q19: ["A", "B"], q20: ["A", "B"], q21: ["A", "B", "D"], q22: ["A", "B", "C"], q23: ["A", "C", "D"], q24: ["A", "C"], q25: ["A", "B", "C"] }; let timeLeft = 1200; const timerDisplay = document.getElementById('timer'); const countdown = setInterval(() => { const minutes = Math.floor(timeLeft / 60); const seconds = timeLeft % 60; timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; if (timeLeft <= 0) { clearInterval(countdown); submitQuiz(); } timeLeft--; }, 1000); function submitQuiz() { clearInterval(countdown); let score = 0; let totalQuestions = Object.keys(correctAnswers).length; for (let i = 1; i <= totalQuestions; i++) { const questionName = `q${i}`; const selectedOptions = Array.from(document.querySelectorAll(`input[name="${questionName}"]:checked`)).map(cb => cb.value); const correct = correctAnswers[questionName]; // Prüfen, ob die Auswahl exakt mit der richtigen Antwort übereinstimmt if (JSON.stringify(selectedOptions.sort()) === JSON.stringify(correct.sort())) { score++; } } document.getElementById('result').innerHTML = `<h2>Test beendet!</h2><p>Du hast ${score} von ${totalQuestions} Fragen richtig beantwortet.</p>`; } </script>
+<body>
+    <div id="timer" style="display: none;">20:00</div>
+    <div class="quiz-container">
+        <h1>KI-Führerschein Prüfungssimulation</h1>
+        
+        <!-- Start-Bildschirm mit Start-Button -->
+        <div id="start-screen">
+            <p>Willkommen zur Prüfung! Sobald du auf Start klickst, startet der 20-Minuten-Timer und die Fragen werden freigeschaltet.</p>
+            <button class="btn" onclick="startQuiz()">Prüfung jetzt starten</button>
+        </div>
+
+        <!-- Eigentlicher Quiz-Inhalt (erst nach Start sichtbar) -->
+        <div id="quiz-content">
+            <form id="quiz-form">
+                <!-- Frage 1 -->
+                <div class="question">
+                    <p>1. Was sind Kernmerkmale von Generativer KI? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q1" value="A"> A) Sie kann neue Inhalte wie Texte, Bilder oder Code erstellen.</li>
+                        <li><input type="checkbox" name="q1" value="B"> B) Sie basiert oft auf Large Language Models (LLMs).</li>
+                        <li><input type="checkbox" name="q1" value="C"> C) Sie versteht die Welt wie ein Mensch mit Bewusstsein.</li>
+                        <li><input type="checkbox" name="q1" value="D"> D) Sie sagt Ergebnisse basierend auf Wahrscheinlichkeiten voraus.</li>
+                    </ul>
+                </div>
+                <!-- Frage 2 -->
+                <div class="question">
+                    <p>2. Welche Risiken entstehen durch die Nutzung von KI im Unternehmen? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q2" value="A"> A) Datenschutzverletzungen bei Eingabe sensibler Daten.</li>
+                        <li><input type="checkbox" name="q2" value="B"> B) Verbreitung von faktisch falschen Informationen (Halluzinationen).</li>
+                        <li><input type="checkbox" name="q2" value="C"> C) Die KI übernimmt automatisch die Geschäftsführung.</li>
+                        <li><input type="checkbox" name="q2" value="D"> D) Urheberrechtsprobleme bei generierten Inhalten.</li>
+                    </ul>
+                </div>
+                <!-- Frage 3 -->
+                <div class="question">
+                    <p>3. Was regelt der EU AI Act? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q3" value="A"> A) Er verbietet KI-Systeme mit unannehmbarem Risiko (z.B. Social Scoring).</li>
+                        <li><input type="checkbox" name="q3" value="B"> B) Er legt Transparenzpflichten für Deepfakes fest.</li>
+                        <li><input type="checkbox" name="q3" value="C"> C) Er regelt die Preise für ChatGPT-Abonnements.</li>
+                        <li><input type="checkbox" name="q3" value="D"> D) Er definiert Anforderungen an Hochrisiko-KI-Systeme.</li>
+                    </ul>
+                </div>
+                <!-- Frage 4 -->
+                <div class="question">
+                    <p>4. Welche Prompting-Techniken verbessern die Ergebnisse? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q4" value="A"> A) Zuweisung einer Rolle (Persona) an die KI.</li>
+                        <li><input type="checkbox" name="q4" value="B"> B) Bereitstellung von Beispielen (Few-Shot Prompting).</li>
+                        <li><input type="checkbox" name="q4" value="C"> C) Verwendung von möglichst kurzen Prompts (nur 1 Wort).</li>
+                        <li><input type="checkbox" name="q4" value="D"> D) Schritt-für-Schritt-Anweisungen (Chain-of-Thought).</li>
+                    </ul>
+                </div>
+                <!-- Frage 5 -->
+                <div class="question">
+                    <p>5. Was ist Bias in KI-Modellen? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q5" value="A"> A) Eine Voreingenommenheit oder Diskriminierung in den Daten.</li>
+                        <li><input type="checkbox" name="q5" value="B"> B) Ein technischer Defekt an der Hardware.</li>
+                        <li><input type="checkbox" name="q5" value="C"> C) Die Spiegelung gesellschaftlicher Vorurteile durch die Trainingsdaten.</li>
+                        <li><input type="checkbox" name="q5" value="D"> D) Die Einstellung der KI, keine politischen Fragen zu beantworten.</li>
+                    </ul>
+                </div>
+                <!-- Frage 6 -->
+                <div class="question">
+                    <p>6. Was ist ein "Token" im Kontext von LLMs? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q6" value="A"> A) Eine Kryptowährung.</li>
+                        <li><input type="checkbox" name="q6" value="B"> B) Die Einheit, in der Text verarbeitet wird (Wörter oder Wortteile).</li>
+                        <li><input type="checkbox" name="q6" value="C"> C) Ein Sicherheitsschlüssel für die API.</li>
+                        <li><input type="checkbox" name="q6" value="D"> D) Die Basis für die Kostenabrechnung vieler KI-Dienste.</li>
+                    </ul>
+                </div>
+                <!-- Frage 7 -->
+                <div class="question">
+                    <p>7. Welche KI-Systeme stuft der EU AI Act als "Hochrisiko" ein? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q7" value="A"> A) KI in kritischer Infrastruktur (z.B. Stromnetz).</li>
+                        <li><input type="checkbox" name="q7" value="B"> B) KI zur biometrischen Identifizierung (Gesichtserkennung).</li>
+                        <li><input type="checkbox" name="q7" value="C"> C) KI in Videospielen.</li>
+                        <li><input type="checkbox" name="q7" value="D"> D) KI im Personalwesen (Bewerberauswahl).</li>
+                    </ul>
+                </div>
+                <!-- Frage 8 -->
+                <div class="question">
+                    <p>8. Was bedeutet "Halluzination" bei einem Chatbot? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q8" value="A"> A) Die KI erfindet Fakten.</li>
+                        <li><input type="checkbox" name="q8" value="B"> B) Die KI antwortet sehr überzeugend, aber falsch.</li>
+                        <li><input type="checkbox" name="q8" value="C"> C) Die KI zeigt Bilder von Drogen.</li>
+                        <li><input type="checkbox" name="q8" value="D"> D) Die KI erkennt, dass sie eine Maschine ist.</li>
+                    </ul>
+                </div>
+                <!-- Frage 9 -->
+                <div class="question">
+                    <p>9. Was ist der Unterschied zwischen Supervised und Unsupervised Learning? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q9" value="A"> A) Supervised Learning nutzt gelabelte Daten (Daten mit der richtigen Antwort).</li>
+                        <li><input type="checkbox" name="q9" value="B"> B) Unsupervised Learning sucht selbstständig nach Mustern in Daten.</li>
+                        <li><input type="checkbox" name="q9" value="C"> C) Es gibt keinen Unterschied.</li>
+                        <li><input type="checkbox" name="q9" value="D"> D) Supervised Learning findet ohne Internet statt.</li>
+                    </ul>
+                </div>
+                <!-- Frage 10 -->
+                <div class="question">
+                    <p>10. Was ist Deep Learning? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q10" value="A"> A) Ein Teilbereich des Maschinellen Lernens.</li>
+                        <li><input type="checkbox" name="q10" value="B"> B) Die Nutzung von künstlichen neuronalen Netzen mit vielen Schichten.</li>
+                        <li><input type="checkbox" name="q10" value="C"> C) Das Auswendiglernen von Datenbanken.</li>
+                        <li><input type="checkbox" name="q10" value="D"> D) Die Grundlage für moderne Sprachmodelle wie GPT.</li>
+                    </ul>
+                </div>
+                <!-- Frage 11 -->
+                <div class="question">
+                    <p>11. Welche Daten sind besonders kritisch bei der Eingabe in öffentliche KIs? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q11" value="A"> A) Personenbezogene Daten (Namen, Gesundheitsdaten).</li>
+                        <li><input type="checkbox" name="q11" value="B"> B) Geschäftsgeheimnisse (Quellcode, Strategien).</li>
+                        <li><input type="checkbox" name="q11" value="C"> C) Öffentlich zugängliche Wetterdaten.</li>
+                        <li><input type="checkbox" name="q11" value="D"> D) Passwörter.</li>
+                    </ul>
+                </div>
+                <!-- Frage 12 -->
+                <div class="question">
+                    <p>12. Was ist ein "System Prompt"? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q12" value="A"> A) Eine Fehlermeldung.</li>
+                        <li><input type="checkbox" name="q12" value="B"> B) Eine Anweisung, die das Verhalten der KI festlegt (Rolle, Stil).</li>
+                        <li><input type="checkbox" name="q12" value="C"> C) Der erste Prompt des Nutzers in einer Sitzung.</li>
+                        <li><input type="checkbox" name="q12" value="D"> D) Ein technischer Befehl zum Neustart.</li>
+                    </ul>
+                </div>
+                <!-- Frage 13 -->
+                <div class="question">
+                    <p>13. Was besagt das Urheberrecht in der EU meist für KI-generierte Werke ohne menschlichen Einfluss? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q13" value="A"> A) Sie sind voll urheberrechtlich geschützt.</li>
+                        <li><input type="checkbox" name="q13" value="B"> B) Sie genießen meist keinen urheberrechtlichen Schutz.</li>
+                        <li><input type="checkbox" name="q13" value="C"> C) Der Urheber ist die KI-Firma.</li>
+                        <li><input type="checkbox" name="q13" value="D"> D) Nur der Mensch, der die "geistige Schöpfung" erbracht hat, ist Urheber.</li>
+                    </ul>
+                </div>
+                <!-- Frage 14 -->
+                <div class="question">
+                    <p>14. Was ist "Few-Shot Prompting"? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q14" value="A"> A) Der KI Beispiele für die gewünschte Antwort geben.</li>
+                        <li><input type="checkbox" name="q14" value="B"> B) Die KI darf nur wenige Wörter schreiben.</li>
+                        <li><input type="checkbox" name="q14" value="C"> C) Eine Technik zur Reduktion von Halluzinationen.</li>
+                        <li><input type="checkbox" name="q14" value="D"> D) Das Gegenteil von Zero-Shot Prompting.</li>
+                    </ul>
+                </div>
+                <!-- Frage 15 -->
+                <div class="question">
+                    <p>15. Was ist der "AI Act" der EU? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q15" value="A"> A) Ein Gesetz zur Förderung von KI-Startups.</li>
+                        <li><input type="checkbox" name="q15" value="B"> B) Die weltweit erste umfassende KI-Verordnung.</li>
+                        <li><input type="checkbox" name="q15" value="C"> C) Ein technischer Standard für Hardware.</li>
+                        <li><input type="checkbox" name="q15" value="D"> D) Ein Regelwerk zum Schutz von Grundrechten.</li>
+                    </ul>
+                </div>
+                <!-- Frage 16 -->
+                <div class="question">
+                    <p>16. Welche Vorteile bietet der Einsatz von KI im Kundenservice? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q16" value="A"> A) 24/7 Verfügbarkeit.</li>
+                        <li><input type="checkbox" name="q16" value="B"> B) Sofortige Beantwortung von Standardanfragen.</li>
+                        <li><input type="checkbox" name="q16" value="C"> C) Die KI ersetzt menschliche Empathie perfekt.</li>
+                        <li><input type="checkbox" name="q16" value="D"> D) Kosteneffizienz.</li>
+                    </ul>
+                </div>
+                <!-- Frage 17 -->
+                <div class="question">
+                    <p>17. Was ist "Reinforcement Learning from Human Feedback" (RLHF)? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q17" value="A"> A) Eine Trainingsmethode für KI.</li>
+                        <li><input type="checkbox" name="q17" value="B"> B) Menschen bewerten KI-Antworten, um das Modell zu verbessern.</li>
+                        <li><input type="checkbox" name="q17" value="C"> C) Die KI lernt, menschliche Emotionen zu ignorieren.</li>
+                        <li><input type="checkbox" name="q17" value="D"> D) Ein Verfahren zur Fehlerkorrektur.</li>
+                    </ul>
+                </div>
+                <!-- Frage 18 -->
+                <div class="question">
+                    <p>18. Was ist "Chain-of-Thought" Prompting? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q18" value="A"> A) Die KI wird aufgefordert, "Schritt für Schritt" zu denken.</li>
+                        <li><input type="checkbox" name="q18" value="B"> B) Hilfreich bei komplexen logischen Aufgaben oder Mathe.</li>
+                        <li><input type="checkbox" name="q18" value="C"> C) Eine Methode zum Bilder generieren.</li>
+                        <li><input type="checkbox" name="q18" value="D"> D) Dient der Verbesserung der logischen Schlussfolgerung.</li>
+                    </ul>
+                </div>
+                <!-- Frage 19 -->
+                <div class="question">
+                    <p>19. Was sind verbotene KI-Praktiken nach dem EU AI Act? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q19" value="A"> A) Social Scoring durch Behörden.</li>
+                        <li><input type="checkbox" name="q19" value="B"> B) KI zur Manipulation von Verhalten (Subliminale Techniken).</li>
+                        <li><input type="checkbox" name="q19" value="C"> C) Gesichtserkennung zur Verbrechensbekämpfung (mit Ausnahmen).</li>
+                        <li><input type="checkbox" name="q19" value="D"> D) KI-Spielzeug mit Sprachausgabe.</li>
+                    </ul>
+                </div>
+                <!-- Frage 20 -->
+                <div class="question">
+                    <p>20. Was ist ein Large Language Model (LLM)? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q20" value="A"> A) Ein Modell, das auf riesigen Textmengen trainiert wurde.</li>
+                        <li><input type="checkbox" name="q20" value="B"> B) Ein System zur Vorhersage des nächsten Wortes.</li>
+                        <li><input type="checkbox" name="q20" value="C"> C) Eine Datenbank für Übersetzungen.</li>
+                        <li><input type="checkbox" name="q20" value="D"> D) Ein Modell, das nur Fakten speichert.</li>
+                    </ul>
+                </div>
+                <!-- Frage 21 -->
+                <div class="question">
+                    <p>21. Wie kann man Bias in KI-Systemen reduzieren? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q21" value="A"> A) Durch diverse und repräsentative Trainingsdaten.</li>
+                        <li><input type="checkbox" name="q21" value="B"> B) Durch regelmäßige Audits und Tests auf Diskriminierung.</li>
+                        <li><input type="checkbox" name="q21" value="C"> C) Indem man die KI keine Entscheidungen treffen lässt.</li>
+                        <li><input type="checkbox" name="q21" value="D"> D) Durch menschliche Aufsicht (Human-in-the-loop).</li>
+                    </ul>
+                </div>
+                <!-- Frage 22 -->
+                <div class="question">
+                    <p>22. Was ist der Parameter "Temperatur" bei LLMs? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q22" value="A"> A) Er steuert die Kreativität der Antwort.</li>
+                        <li><input type="checkbox" name="q22" value="B"> B) Hohe Temperatur führt zu zufälligeren, kreativeren Antworten.</li> 
+                        <li><input type="checkbox" name="q22" value="C"> C) Niedrige Temperatur macht die KI fokussierter und deterministischer.</li>
+                        <li><input type="checkbox" name="q22" value="D"> D) Er misst die Serverlast.</li>
+                    </ul>
+                </div>
+                <!-- Frage 23 -->
+                <div class="question">
+                    <p>23. Was sind Transparenzpflichten für Anbieter von KI-Systemen? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q23" value="A"> A) Kennzeichnung von KI-generierten Inhalten (Deepfakes).</li>
+                        <li><input type="checkbox" name="q23" value="B"> B) Offenlegung des kompletten Quellcodes für jeden Nutzer.</li>
+                        <li><input type="checkbox" name="q23" value="C"> C) Information, dass man mit einer KI interagiert.</li>
+                        <li><input type="checkbox" name="q23" value="D"> D) Erstellung einer detaillierten technischen Dokumentation.</li>
+                    </ul>
+                </div>
+                <!-- Frage 24 -->
+                <div class="question">
+                    <p>24. Was ist "Zero-Shot Prompting"? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q24" value="A"> A) Der KI eine Aufgabe ohne Beispiele geben.</li>
+                        <li><input type="checkbox" name="q24" value="B"> B) Die KI antwortet sofort ohne zu zögern.</li>
+                        <li><input type="checkbox" name="q24" value="C"> C) Die Standardnutzungsweise von ChatGPT.</li>
+                        <li><input type="checkbox" name="q24" value="D"> D) Eine Technik für Fortgeschrittene.</li>
+                    </ul>
+                </div>
+                <!-- Frage 25 -->
+                <div class="question">
+                    <p>25. Wer ist laut AI Act für die Einhaltung der Regeln bei einem KI-System verantwortlich? (Mehrere Antworten möglich)</p>
+                    <ul class="options">
+                        <li><input type="checkbox" name="q25" value="A"> A) Der Anbieter (Provider), der die KI entwickelt.</li>
+                        <li><input type="checkbox" name="q25" value="B"> B) Der Händler oder Importeur.</li>
+                        <li><input type="checkbox" name="q25" value="C"> C) Der Endnutzer (in bestimmten Fällen).</li>
+                        <li><input type="checkbox" name="q25" value="D"> D) Niemand, KI ist rechtsfrei.</li>
+                    </ul>
+                </div>
+                <button type="button" class="btn" onclick="submitQuiz()">Test jetzt auswerten</button>
+            </form>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            q1: ["A", "B", "D"], q2: ["A", "B", "D"], q3: ["A", "B", "D"], q4: ["A", "B", "D"],
+            q5: ["A", "C"], q6: ["B", "D"], q7: ["A", "B", "D"], q8: ["A", "B"],
+            q9: ["A", "B"], q10: ["A", "B", "D"], q11: ["A", "B", "D"], q12: ["B"],
+            q13: ["B", "D"], q14: ["A", "D"], q15: ["B", "D"], q16: ["A", "B", "D"],
+            q17: ["A", "B", "D"], q18: ["A", "B", "D"], q19: ["A", "B"], q20: ["A", "B"],
+            q21: ["A", "B", "D"], q22: ["A", "B", "C"], q23: ["A", "C", "D"], q24: ["A", "C"],
+            q25: ["A", "B", "C"]
+        };
+
+        let timeLeft = 1200; // 20 Minuten in Sekunden
+        let timerInterval = null;
+        let isSubmitted = false;
+
+        function startQuiz() {
+            // Startbildschirm verstecken, Quiz und Timer anzeigen
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('timer').style.display = 'block';
+
+            // Timer starten
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    playAlarm();
+                    submitQuiz(true); // Automatische Abgabe bei Ablauf
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Akustisches Signal (Piepton über Web Audio API)
+        function playAlarm() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Tonfrequenz (A5)
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                setTimeout(() => { oscillator.stop(); }, 1500); // Signal ertönt für 1,5 Sekunden
+            } catch (e) {
+                console.log("Audio konnte nicht abgespielt werden.");
+            }
+        }
+
+        function submitQuiz(timeIsUp = false) {
+            if (isSubmitted) return;
+            isSubmitted = true;
+
+            if (!timeIsUp) {
+                clearInterval(timerInterval);
+            }
+
+            let score = 0;
+            let totalQuestions = Object.keys(correctAnswers).length;
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                const questionName = `q${i}`;
+                const selectedOptions = Array.from(document.querySelectorAll(`input[name="${questionName}"]:checked`)).map(cb => cb.value);
+                const correct = correctAnswers[questionName];
+
+                if (JSON.stringify(selectedOptions.sort()) === JSON.stringify(correct.sort())) {
+                    score++;
+                }
+            }
+
+            // Alle Checkboxen sperren, damit nichts mehr geändert werden kann
+            const allInputs = document.querySelectorAll('input[type="checkbox"]');
+            allInputs.forEach(input => input.disabled = true);
+
+            // Auswertungs-Button ausblenden
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) submitBtn.style.display = 'none';
+
+            let headerText = timeIsUp ? "<h2>⏰ Zeit abgelaufen! Die Prüfung wurde automatisch beendet.</h2>" : "<h2>Test beendet!</h2>";
+            document.getElementById('result').innerHTML = `${headerText}<p>Du hast ${score} von ${totalQuestions} Fragen richtig beantwortet.</p>`;
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
