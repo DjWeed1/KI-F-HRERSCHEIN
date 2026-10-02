@@ -20,4 +20,4 @@ Das Projekt ist als GitHub Pages Repository konfiguriert und direkt im Browser l
 1. Repository auf GitHub klonen oder öffnen.
 2. Über die GitHub Pages Einstellungen (Branch: `main`, Ordner: `/root`) aktivieren.
 3. Den generierten `github.io`-Link an die Teilnehmer verteilen.
-4. oder aufrufbar über 
+4. oder aufrufbar über https://djweed1.github.io/KI-F-HRERSCHEIN/
